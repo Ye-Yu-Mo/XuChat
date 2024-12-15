@@ -3,11 +3,10 @@
 
 using namespace example;
 
-void callback(google::protobuf::RpcController *cntl,
-              const ::example::EchoResponse *response)
+void callback(google::protobuf::RpcController* controller, const example::EchoResponse* response) 
 {
     std::cout << response->message() << std::endl;
-    delete cntl;
+    delete controller;
     delete response;
 }
 
@@ -19,7 +18,7 @@ int main(int argc, char *argv[])
     options.timeout_ms = -1;
     options.max_retry = 3;
     options.protocol = "baidu_std";
-    brpc::Channel channel();
+    brpc::Channel channel;
     channel.Init("127.0.0.1:8080", &options);
     // 构造 EchoService_Stub 对象 用于rpc调用
     EchoService_Stub stub(&channel);
@@ -28,7 +27,7 @@ int main(int argc, char *argv[])
     req.set_message("hello world!");
     brpc::Controller *cntl = new brpc::Controller;
     EchoResponse *resp = new EchoResponse;
-    auto clusure = google::protobuf::NewCallback(callback, cntl, resp);
+    google::protobuf::Closure* closure = google::protobuf::NewCallback(&callback, cntl, resp);
     stub.Echo(cntl, &req, resp, clusure);
 
     return 0;

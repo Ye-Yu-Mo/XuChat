@@ -1,3 +1,4 @@
+#pragma once
 #include <etcd/Client.hpp>
 #include <etcd/KeepAlive.hpp>
 #include <etcd/Response.hpp>
@@ -20,7 +21,7 @@ namespace XuChat
             auto resp = _client->put(key, val, _lease_id).get();
             if (resp.is_ok() == false)
             {
-                error(logger, "新增数据失败：%s", resp.error_message().c_str());
+                log_error(logger, "新增数据失败：%s", resp.error_message().c_str());
                 return false;
             }
             return true;
@@ -48,7 +49,7 @@ namespace XuChat
             auto resp = _client->ls(basedir).get();
             if (resp.is_ok() == false)
             {
-                error(logger, "获取服务信息数据失败：%s", resp.error_message().c_str());
+                log_error(logger, "获取服务信息数据失败：%s", resp.error_message().c_str());
             }
             int sz = resp.keys().size();
             for (int i = 0; i < sz; ++i)
