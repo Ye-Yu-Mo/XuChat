@@ -88,7 +88,8 @@
         "__split_buffer": "cpp",
         "__tree": "cpp",
         "*.inc": "cpp",
-        "__config": "cpp"
+        "__config": "cpp",
+        "expected": "cpp"
     },
     "cSpell.words": [
         "DOESNT",
