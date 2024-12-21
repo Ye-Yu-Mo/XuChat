@@ -91,7 +91,8 @@
         "__config": "cpp",
         "expected": "cpp",
         "ranges": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "any": "cpp"
     },
     "cSpell.words": [
         "DOESNT",
