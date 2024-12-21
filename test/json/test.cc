@@ -1,73 +1,55 @@
 #include <glaze/json.hpp>
-// #include <glaze/glaze_exceptions.hpp>
 #include <string>
 #include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <ankerl/unordered_dense.h>
-struct student
-{
-    std::string name;
-    int age;
-    std::vector<float> score;
-};
+struct Terms
+        {
+            ankerl::unordered_dense::map<std::string, std::vector<std::string>> terms;
+        };
 
-struct Propertie
-{
-    std::string type;
-    std::string analyzer;
-    bool enabled;
+        struct Match
+        {
+            ankerl::unordered_dense::map<std::string, std::string> match;
+        };
 
-    // Propertie(const std::string &type = "text",
-    //           const std::string &analyzer = "ik_max_word",
-    //           bool enabled = true)
-    //     : type(type), analyzer(analyzer), enabled(enabled) {}
-};
+        struct Bool
+        {
+            std::vector<Terms> mast_not;
+            std::vector<Match> should;
+        };
 
-struct Mappings
-{
-    bool dynamic;
-    ankerl::unordered_dense::map<std::string, Propertie> properties;
-};
+        struct Search
+        {
+            ankerl::unordered_dense::map<std::string, Bool> query;
+        };
+Search search;
 
-struct Ik
+void appendMastNot(const std::string &key, const std::vector<std::string> &values)
 {
-    std::string tokenizer;
-};
+    Terms t;
+    t.terms[key] = values;
+    search.query["bool"].mast_not.push_back(t);  // 直接添加 Terms 对象
+}
 
-struct Analyzer
+void appendShouldMatch(const std::string &key, const std::string &value)
 {
-    Ik ik;
-};
+    Match m;
+    m.match[key] = value;
+    search.query["bool"].should.push_back(m);  // 直接添加 Match 对象
+}
 
-struct Analysis
-{
-    Analyzer analyzer;
-};
-
-struct Settings
-{
-    Analysis analysis;
-};
-
-struct Config
-{
-    Mappings mappings;
-    Settings settings;
-};
 int main()
 {
-    student stu;
-    stu.name = "张三";
-    stu.age = 18;
-    stu.score = {100, 80, 90};
-    Config conf;
-    conf.settings.analysis.analyzer.ik.tokenizer = "ik_max_word";
-    conf.mappings.dynamic = true;
-    conf.mappings.properties["昵称"] = {"text", "standard"};
-    conf.mappings.properties["用户id"] = {"keyword", "ik_max_word"};
-    std::string buffer{};
-    auto ec = glz::write_json(conf, buffer);
+    search.query["bool"] = {};  // 确保 bool 字段已初始化
+    appendMastNot("user_id.keyword", {"user1", "user2", "user3"});
+    appendShouldMatch("user_id", "用户ID");
+    appendShouldMatch("nickname", "昵称");
+    appendShouldMatch("phone", "手机号");
+
+    std::string buffer;
+    auto ec = glz::write_json(search, buffer);
     if (ec)
     {
         std::cout << "写入Json错误" << std::endl;

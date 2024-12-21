@@ -89,7 +89,9 @@
         "__tree": "cpp",
         "*.inc": "cpp",
         "__config": "cpp",
-        "expected": "cpp"
+        "expected": "cpp",
+        "ranges": "cpp",
+        "regex": "cpp"
     },
     "cSpell.words": [
         "DOESNT",
